@@ -1,8 +1,9 @@
 class LinearModel(object):
     """Clase base para modelos lineales."""
 
-    def __init__(self, step_size=0.2, max_iter=100, eps=1e-5,
-                 theta_0=None, verbose=True):
+    def __init__(
+        self, step_size=0.2, max_iter=100, eps=1e-5, theta_0=None, verbose=True
+    ):
         """
         Args:
             step_size: tamaño del paso para cada iteración.
@@ -28,7 +29,9 @@ class LinearModel(object):
             x: ejemplos de entrenmiento (solamente features). Tamaño (m, n).
             y: etiquetas de los ejemplos de entrenamiento. Tamaño (m,).
         """
-        raise NotImplementedError('Subclase de LinearModel debe implementar el método fit.')
+        raise NotImplementedError(
+            "Subclase de LinearModel debe implementar el método fit."
+        )
 
     def predict(self, x):
         """Hace una presicción dado un nuevo x.
@@ -39,4 +42,6 @@ class LinearModel(object):
         Devuelve:
             Predicciones de tamaño (m,).
         """
-        raise NotImplementedError('Subclase de LinearModel debe implementar el método predict.')
+        raise NotImplementedError(
+            "Subclase de LinearModel debe implementar el método predict."
+        )
