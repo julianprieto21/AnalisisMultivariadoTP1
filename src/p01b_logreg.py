@@ -18,11 +18,11 @@ def p01b(train_path, eval_path, pred_path=""):
     x_test, y_test = util.load_dataset(eval_path, add_intercept=True)
 
     # Se entrena el modelo y se guardan las predicciones
-    Modelo = LogisticRegression()
+    Modelo = LogisticRegression(verbose=False)
     Modelo.fit(x_train, y_train)
     Modelo.graficos(pred_path)
     pred = Modelo.predict(x_test)
-    np.savetxt(pred_path + "/p01b_logreg.csv", pred, delimiter=",")
+    np.savetxt(pred_path + "/pred_logreg.txt", pred, delimiter=",")
 
 
 class LogisticRegression(LinearModel):
@@ -33,20 +33,6 @@ class LogisticRegression(LinearModel):
         > clf.fit(x_train, y_train)
         > clf.predict(x_eval)
     """
-
-    def reglog(self, x, coef):
-        """Corre una regresión logística para x y devuelve la predicción.
-
-        Args:
-            x: Conjunto de datos. Tamaño (m, n).
-            coef: Coeficientes de la regresión. Tamaño (m,).
-
-        Returns:
-            Salidas de tamaño (m,).
-        """
-
-        # *** EMPEZAR CÓDIGO AQUÍ ***
-        # *** TERMINAR CÓDIGO AQUÍ ***
 
     def fit(self, x, y):
         """Corre el método de Newton para minimizar J(tita) para reg log.
@@ -64,6 +50,7 @@ class LogisticRegression(LinearModel):
 
         # inicializa la funcion sigmoide, el gradiente y el hessiano
         def sigmoide(theta):
+            # probabilidad de pertenecer a la clase 1
             return 1 / (1 + np.exp(-theta @ x.T))  # @ producto matricial
 
         def costo(theta):
@@ -98,10 +85,10 @@ class LogisticRegression(LinearModel):
             error = np.linalg.norm(new_theta - self.theta)
             self.theta = new_theta
             self.contador_iteraciones += 1
-
+            # guarda los valores de theta y el costo
             self.coeficientes.append(self.theta)
             self.costo.append(costo(self.theta))
-
+            # calcula el accuracy en cada iteracion. Corte 0.5
             pred = sigmoide(self.theta)
             pred[pred >= 0.5] = 1
             pred[pred < 0.5] = 0
@@ -112,8 +99,6 @@ class LogisticRegression(LinearModel):
             print("Terminó en", self.contador_iteraciones, "iteraciones")
             print("Error:", error)
             print("Theta:", self.theta)
-            # print("Costos", self.costo)
-            # print("Coeficientes", self.coeficientes)
 
         # *** TERMINAR CÓDIGO AQUÍ ***
 
@@ -135,13 +120,7 @@ class LogisticRegression(LinearModel):
             return 1 - (1 / (1 + np.exp(-theta @ x.T)))
 
         probs = prob_1(self.theta)
-        probs_copy = probs.copy()
-        for i in range(len(probs)):
-            if probs[i] < 0.75:
-                probs_copy[i] = 0
-            else:
-                probs_copy[i] = 1
-        return probs_copy
+        return probs
 
         # *** TERMINAR CÓDIGO AQUÍ ***
 
@@ -157,11 +136,12 @@ class LogisticRegression(LinearModel):
         # *** EMPEZAR CÓDIGO AQUÍ ***
 
         # Costo vs Iteraciones
+        plt.clf()  # limpia el gráfico anterior
         plt.plot(self.costo)
         plt.xlabel("Iteraciones")
         plt.ylabel("Costo")
         plt.title("Costo vs Iteraciones")
-        plt.savefig(pred_path + "/p01b_costo_iteraciones.png")
+        plt.savefig(pred_path + "/costo_iteraciones.png")
 
         # Accuracy de entrenamiento vs Iteraciones
         plt.clf()  # limpia el gráfico anterior
@@ -170,7 +150,7 @@ class LogisticRegression(LinearModel):
         plt.ylabel("Accuracy")
         plt.title("Accuracy de entrenamiento vs Iteraciones")
         plt.legend(["Accuracy con corte en 0.5"])
-        plt.savefig(pred_path + "/p01b_accuracy_iteraciones.png")
+        plt.savefig(pred_path + "/accuracy_iteraciones.png")
 
         # Evolución features (sin graficar el intercept)
         plt.clf()  # limpia el gráfico anterior
@@ -180,9 +160,6 @@ class LogisticRegression(LinearModel):
         plt.ylabel("Coeficientes")
         plt.title("Evolución features")
         plt.legend(["Feature 1", "Feature 2"])
-        plt.savefig(pred_path + "/p01b_evolucion_features.png")
+        plt.savefig(pred_path + "/evolucion_features.png")
 
         # *** TERMINAR CÓDIGO AQUÍ ***
-
-
-p01b("data/ds1_train.csv", "data/ds1_valid.csv", "output")

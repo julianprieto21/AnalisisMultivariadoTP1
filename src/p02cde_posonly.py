@@ -4,7 +4,7 @@ import util
 from p01b_logreg import LogisticRegression
 
 # Caracter a reemplazar con el sub problema correspondiente.`
-WILDCARD = 'X'
+WILDCARD = 'c'
 
 
 def p02cde(train_path, valid_path, test_path, pred_path):
@@ -30,7 +30,7 @@ def p02cde(train_path, valid_path, test_path, pred_path):
     # Asegurarse de guardar las salidas en pred_path_c
     x_train, y_train = util.load_dataset(train_path, label_col="t", add_intercept=True)
     x_test, y_test = util.load_dataset(test_path, label_col="t", add_intercept=True)
-    Modelo = LogisticRegression()
+    Modelo = LogisticRegression(verbose=False)
     Modelo.fit(x_train, y_train)
     pred = Modelo.predict(x_test)
     np.savetxt(pred_path_c + "/p02c_logreg.csv", pred, delimiter=",")
@@ -40,7 +40,7 @@ def p02cde(train_path, valid_path, test_path, pred_path):
     # Asegurarse de guardar las salidas en pred_path_d
     x_train, y_train = util.load_dataset(train_path, label_col="y", add_intercept=True)
     x_test, y_test = util.load_dataset(test_path, label_col="y", add_intercept=True)
-    Modelo = LogisticRegression()
+    Modelo = LogisticRegression(verbose=False)
     Modelo.fit(x_train, y_train)
     pred = Modelo.predict(x_test)
     np.savetxt(pred_path_d + "/p02d_logreg.csv", pred, delimiter=",")
