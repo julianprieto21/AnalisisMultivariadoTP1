@@ -18,11 +18,13 @@ def p01b(train_path, eval_path, pred_path=""):
     x_test, y_test = util.load_dataset(eval_path, add_intercept=True)
 
     # Se entrena el modelo y se guardan las predicciones
-    Modelo = LogisticRegression(verbose=False)
+    Modelo = LogisticRegression(verbose=True)
     Modelo.fit(x_train, y_train)
     Modelo.graficos(pred_path)
     pred = Modelo.predict(x_test)
     np.savetxt(pred_path + "/pred_logreg.txt", pred, delimiter=",")
+    # util.plot(x_train, y_train, Modelo.theta, pred_path + "/pred_train.png")
+    # util.plot(x_test, y_test, Modelo.theta, pred_path + "/pred_test.png")
 
 
 class LogisticRegression(LinearModel):
@@ -43,59 +45,44 @@ class LogisticRegression(LinearModel):
         """
         # *** EMPEZAR CÓDIGO AQUÍ ***
 
-        m, n = x.shape
-        # inicializa theta en vector de ceros si es None
-        if self.theta is None:
+        m, n = x.shape # dimensiones de x
+
+        if self.theta is None: # si theta es None, inicializa theta en vector de ceros
             self.theta = np.zeros(n)
 
-        # inicializa la funcion sigmoide, el gradiente y el hessiano
-        def sigmoide(theta):
-            # probabilidad de pertenecer a la clase 1
-            return 1 / (1 + np.exp(-theta @ x.T))  # @ producto matricial
+        sigmoide = lambda theta: 1 / (1 + np.exp(-theta @ x.T)) # funcion sigmoide
 
-        def costo(theta):
-            valores_sigmoide = sigmoide(theta)
-            return (
-                -1
-                / m
-                * (
-                    y @ np.log(valores_sigmoide)
-                    + (1 - y) @ np.log(1 - valores_sigmoide)
-                )
-            )
+        costo = lambda sigm_vals: -1 / m * (y @ np.log(sigm_vals) + (1 - y) @ np.log(1 - sigm_vals)) # funcion de costo
 
-        def gradiente(theta):
-            valores_sigmoide = sigmoide(theta)
-            return x.T @ (valores_sigmoide - y)
+        gradiente = lambda sigm_vals: 1 / m * (sigm_vals - y) @ x # gradiente
 
-        def hessiano(theta):
-            valores_sigmoide = sigmoide(theta)
-            diag = np.diag(valores_sigmoide * (1 - valores_sigmoide))
-            return x.T @ diag @ x
+        hessiano = lambda sigm_vals: 1 / m * (sigm_vals * (1 - sigm_vals) * x.T @ x) # hessiano
 
-        # setea el error inicial en infinito para entrar al while
-        error = np.Infinity
+        error = 1 # inicializa el error en 1
 
         # comienza con las iteraciones con el metodo de Newton
-        while error > self.eps and self.contador_iteraciones < self.max_iter:
-            grad = gradiente(self.theta)
-            hess = hessiano(self.theta)
-            hess_inv = np.linalg.inv(hess)
-            new_theta = self.theta - hess_inv @ grad
-            error = np.linalg.norm(new_theta - self.theta)
-            self.theta = new_theta
-            self.contador_iteraciones += 1
-            # guarda los valores de theta y el costo
-            self.coeficientes.append(self.theta)
-            self.costo.append(costo(self.theta))
-            # calcula el accuracy en cada iteracion. Corte 0.5
-            pred = sigmoide(self.theta)
-            pred[pred >= 0.5] = 1
-            pred[pred < 0.5] = 0
-            self.accuracy.append(accuracy_score(y, pred))
+        while error > self.eps and self.contador_iteraciones < self.max_iter: # iterar hasta que el error sea menor a epsilon o se llegue al maximo de iteraciones
+            pred = sigmoide(self.theta) # calculo de la sigmoide
+            grad = gradiente(sigm_vals= pred) # calculo del gradiente
+            hess = hessiano(sigm_vals= pred) # calculo del hessiano
+            hess_inv = np.linalg.inv(hess) # inversa del hessiano
+            new_theta = self.theta - hess_inv @ grad # calculo de theta nuevo
+            error = np.linalg.norm(new_theta - self.theta) # calculo del error
+            self.theta = new_theta # actualizacion de theta
+            self.contador_iteraciones += 1 # actualizacion de contador de iteraciones
 
-        # si verbose es True, imprime los resultados
-        if self.verbose:
+            new_pred = sigmoide(self.theta) # calculo de la sigmoide
+
+            # guarda los valores de theta y el costo
+            self.coeficientes.append(self.theta) # guarda los valores de theta
+            self.costo.append(costo(new_pred)) # guarda el costo
+
+            # calcula el accuracy en cada iteracion. Corte 0.5
+            new_pred[new_pred >= 0.5] = 1
+            new_pred[new_pred < 0.5] = 0
+            self.accuracy.append(accuracy_score(y, new_pred)) # guarda el accuracy
+
+        if self.verbose: # si verbose es True, imprime los resultados
             print("Terminó en", self.contador_iteraciones, "iteraciones")
             print("Error:", error)
             print("Theta:", self.theta)
@@ -113,13 +100,9 @@ class LogisticRegression(LinearModel):
         """
         # *** EMPEZAR CÓDIGO AQUÍ ***
 
-        def prob_1(theta):
-            return 1 / (1 + np.exp(-theta @ x.T))
+        prob_1 = lambda theta: 1 / (1 + np.exp(-theta @ x.T)) # funcion que calcula la probabilidad de que sea 1
 
-        def prob_0(theta):
-            return 1 - (1 / (1 + np.exp(-theta @ x.T)))
-
-        probs = prob_1(self.theta)
+        probs = prob_1(self.theta) # calcula la probabilidad de que sea 1
         return probs
 
         # *** TERMINAR CÓDIGO AQUÍ ***
@@ -161,5 +144,6 @@ class LogisticRegression(LinearModel):
         plt.title("Evolución features")
         plt.legend(["Feature 1", "Feature 2"])
         plt.savefig(pred_path + "/evolucion_features.png")
+
 
         # *** TERMINAR CÓDIGO AQUÍ ***
