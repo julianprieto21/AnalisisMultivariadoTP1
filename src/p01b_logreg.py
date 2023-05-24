@@ -23,8 +23,8 @@ def p01b(train_path, eval_path, pred_path=""):
     Modelo.graficos(pred_path)
     pred = Modelo.predict(x_test)
     np.savetxt(pred_path + "/pred_logreg.txt", pred, delimiter=",")
-    # util.plot(x_train, y_train, Modelo.theta, pred_path + "/pred_train.png")
-    # util.plot(x_test, y_test, Modelo.theta, pred_path + "/pred_test.png")
+    util.plot(x_train, y_train, Modelo.theta, pred_path + "/pred_train.png")
+    util.plot(x_test, y_test, Modelo.theta, pred_path + "/pred_test.png")
 
 
 class LogisticRegression(LinearModel):
@@ -36,7 +36,7 @@ class LogisticRegression(LinearModel):
         > clf.predict(x_eval)
     """
 
-    def fit(self, x, y):
+    def fit(self, x, y, alpha=1):
         """Corre el método de Newton para minimizar J(tita) para reg log.
 
         Args:
@@ -63,8 +63,8 @@ class LogisticRegression(LinearModel):
         # comienza con las iteraciones con el metodo de Newton
         while error > self.eps and self.contador_iteraciones < self.max_iter: # iterar hasta que el error sea menor a epsilon o se llegue al maximo de iteraciones
             pred = sigmoide(self.theta) # calculo de la sigmoide
-            grad = gradiente(sigm_vals= pred) # calculo del gradiente
-            hess = hessiano(sigm_vals= pred) # calculo del hessiano
+            grad = gradiente(sigm_vals=pred) # calculo del gradiente
+            hess = hessiano(sigm_vals=pred) # calculo del hessiano
             hess_inv = np.linalg.inv(hess) # inversa del hessiano
             new_theta = self.theta - hess_inv @ grad # calculo de theta nuevo
             error = np.linalg.norm(new_theta - self.theta) # calculo del error
@@ -72,12 +72,12 @@ class LogisticRegression(LinearModel):
             self.contador_iteraciones += 1 # actualizacion de contador de iteraciones
 
             new_pred = sigmoide(self.theta) # calculo de la sigmoide
-
             # guarda los valores de theta y el costo
             self.coeficientes.append(self.theta) # guarda los valores de theta
-            self.costo.append(costo(new_pred)) # guarda el costo
+            self.costo.append(costo(sigm_vals=new_pred)) # guarda el costo
 
             # calcula el accuracy en cada iteracion. Corte 0.5
+            new_pred = new_pred / alpha # aplica el factor de correccion
             new_pred[new_pred >= 0.5] = 1
             new_pred[new_pred < 0.5] = 0
             self.accuracy.append(accuracy_score(y, new_pred)) # guarda el accuracy

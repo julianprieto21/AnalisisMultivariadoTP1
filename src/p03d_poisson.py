@@ -15,12 +15,18 @@ def p03d(lr, train_path, eval_path, pred_path):
     """
     # Cargar dataset
     x_train, y_train = util.load_dataset(train_path, add_intercept=False)
+    x_eval, y_eval = util.load_dataset(eval_path, add_intercept=False)
 
     # *** EMPEZAR EL CÓDIGO AQUÍ ***
 
     # Entrenar una regresión poisson
     # Correr en el conjunto de validación, y usar  np.savetxt para guardar las salidas en pred_path.
-    
+    Modelo = PoissonRegression(step_size=lr)
+    Modelo.fit(x_train, y_train)
+    # pred = Modelo.predict(x_eval)
+    # np.savetxt(pred_path, pred, delimiter=",")
+
+
     # *** TERMINAR CÓDIGO AQUÍ
 
 
@@ -41,6 +47,28 @@ class PoissonRegression(LinearModel):
             y: etiquetas de ejemplos de entrenamiento. Tamaño (m,).
         """
         # *** EMPEZAR EL CÓDIGO AQUÍ ***
+        m, n = x.shape
+        g = lambda X: np.exp(X)
+
+        if self.theta is None:
+            self.theta = np.zeros(n)
+
+        gradiente = lambda theta: np.sum(y)/(theta @ x.T) - m
+
+        for i in range(self.max_iter):
+            theta = self.theta
+
+            grad = gradiente(theta)
+            print(grad)
+            self.theta = theta - self.step_size @ grad
+        
+            error = np.linalg.norm(self.theta - theta)
+            if error < self.eps:
+                break
+        
+        print("Iteraciones: ", i)
+        print("Error: ", error)
+        print("Theta: ", self.theta)
 
         # *** TERMINAR CÓDIGO AQUÍ
 
