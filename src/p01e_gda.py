@@ -33,6 +33,12 @@ class GDA(LinearModel):
         > clf.predict(x_eval)
     """
 
+    def normalizar(self, x):
+        media = np.mean(x, axis=0) # media de x
+        desv = np.std(x, axis=0) # desviacion estandar de x
+        x_norm = (x - media) / desv # normaliza x
+        return x_norm
+
     def fit(self, x, y):
         """Entrena un modelo GDA.
 
@@ -43,7 +49,9 @@ class GDA(LinearModel):
         Returns:
             theta: parámetros del modelo GDA.
         """
-        # *** EMPEZAR CÓDIGO AQUÍ ***
+
+        # x = self.normalizar(x)
+
 
         m, n = x.shape # dimensiones de x
 
@@ -66,7 +74,6 @@ class GDA(LinearModel):
         print(self.theta)
         return self.theta
 
-        # *** TERMINAR CÓDIGO AQUÍ ***
 
     def predict(self, x):
         """Hace una predicción sobre x nuevos.
@@ -77,7 +84,6 @@ class GDA(LinearModel):
         Returns:
             Salidas de tamaño (m,).
         """
-        # *** EMPEZAR CÓDIGO AQUÍ ***
         
         sigmoide = lambda z: 1/(1+np.exp(-z)) # función sigmoide
         theta = self.theta[:2]
@@ -85,7 +91,3 @@ class GDA(LinearModel):
         z = (theta @ x.T) + theta_0 # calcula z
         pred = sigmoide(z) # predicciones
         return pred
-
-        # *** TERMINAR CÓDIGO AQUÍ ***
-
-

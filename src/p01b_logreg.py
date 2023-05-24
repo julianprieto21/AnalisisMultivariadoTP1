@@ -43,7 +43,6 @@ class LogisticRegression(LinearModel):
             x: ejemplos de entrenamiento (features solamente). Tamaño (m, n).
             y: etiquetas de ejemplos de entrenamiento. Tamaño (m,).
         """
-        # *** EMPEZAR CÓDIGO AQUÍ ***
 
         m, n = x.shape # dimensiones de x
 
@@ -87,7 +86,6 @@ class LogisticRegression(LinearModel):
             print("Error:", error)
             print("Theta:", self.theta)
 
-        # *** TERMINAR CÓDIGO AQUÍ ***
 
     def predict(self, x):
         """Hace una predicción sobre x nuevos.
@@ -98,14 +96,12 @@ class LogisticRegression(LinearModel):
         Returns:
             Salidas de tamaño (m,).
         """
-        # *** EMPEZAR CÓDIGO AQUÍ ***
 
         prob_1 = lambda theta: 1 / (1 + np.exp(-theta @ x.T)) # funcion que calcula la probabilidad de que sea 1
 
         probs = prob_1(self.theta) # calcula la probabilidad de que sea 1
         return probs
 
-        # *** TERMINAR CÓDIGO AQUÍ ***
 
     def graficos(self, pred_path):
         """Crea los siguientes gráficos.
@@ -116,7 +112,6 @@ class LogisticRegression(LinearModel):
         Args:
             pred_path: directorio para guardar las imágenes.
         """
-        # *** EMPEZAR CÓDIGO AQUÍ ***
 
         # Costo vs Iteraciones
         plt.clf()  # limpia el gráfico anterior
@@ -145,5 +140,3 @@ class LogisticRegression(LinearModel):
         plt.legend(["Feature 1", "Feature 2"])
         plt.savefig(pred_path + "/evolucion_features.png")
 
-
-        # *** TERMINAR CÓDIGO AQUÍ ***

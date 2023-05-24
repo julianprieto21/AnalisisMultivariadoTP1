@@ -47,6 +47,7 @@ class PoissonRegression(LinearModel):
             y: etiquetas de ejemplos de entrenamiento. Tamaño (m,).
         """
         # *** EMPEZAR EL CÓDIGO AQUÍ ***
+        
         m, n = x.shape
 
         if self.theta is None:

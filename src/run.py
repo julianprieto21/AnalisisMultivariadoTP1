@@ -11,17 +11,17 @@ correr = 3  # CAMBIAR POR número de problema a correr. 0 corre todos.
 
 # Problema 1
 if correr == 0 or correr == 1:
-    p01b(
-        train_path="./data/ds1_train.csv",
-        eval_path="./data/ds1_valid.csv",
-        pred_path="output/p01b/ds1",
-    )
+    # p01b(
+    #     train_path="./data/ds1_train.csv",
+    #     eval_path="./data/ds1_valid.csv",
+    #     pred_path="output/p01b/ds1",
+    # )
 
-    p01b(
-        train_path="./data/ds2_train.csv",
-        eval_path="./data/ds2_valid.csv",
-        pred_path="output/p01b/ds2",
-    )
+    # p01b(
+    #     train_path="./data/ds2_train.csv",
+    #     eval_path="./data/ds2_valid.csv",
+    #     pred_path="output/p01b/ds2",
+    # )
 
     p01e(
         train_path="./data/ds1_train.csv",
@@ -37,13 +37,12 @@ if correr == 0 or correr == 1:
 
 # Problema 2
 if correr == 0 or correr == 2:
-    for WILDCARD in ["c", "d", "e"]:
-      p02cde(
-          train_path="./data/ds3_train.csv",
-          valid_path="./data/ds3_valid.csv",
-          test_path="./data/ds3_test.csv",
-          pred_path=f"output/p02{WILDCARD}/p02{WILDCARD}_pred.txt",
-      )
+    p02cde(
+        train_path="./data/ds3_train.csv",
+        valid_path="./data/ds3_valid.csv",
+        test_path="./data/ds3_test.csv",
+        pred_path=f"output/p02WILDCARD/p02WILDCARD_pred.txt",
+    )
 
 # Problema 3
 if correr == 0 or correr == 3:

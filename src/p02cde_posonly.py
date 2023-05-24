@@ -21,11 +21,10 @@ def p02cde(train_path, valid_path, test_path, pred_path):
         test_path: directorio al CSV conteniendo el archivo de test.
         pred_path: direcotrio para guardar las predicciones.
     """
-    pred_path_c = pred_path.replace(WILDCARD, 'c')
-    pred_path_d = pred_path.replace(WILDCARD, 'd')
-    pred_path_e = pred_path.replace(WILDCARD, 'e')
+    pred_path_c = pred_path.replace("WILDCARD", 'c')
+    pred_path_d = pred_path.replace("WILDCARD", 'd')
+    pred_path_e = pred_path.replace("WILDCARD", 'e')
 
-    # *** EMPEZAR EL CÓDIGO AQUÍ ***
     # Parte (c): Train y test en labels verdaderos.
     # Asegurarse de guardar las salidas en pred_path_c
     x_train, y_train = util.load_dataset(train_path, label_col="t", add_intercept=True)
@@ -33,11 +32,11 @@ def p02cde(train_path, valid_path, test_path, pred_path):
     Modelo = LogisticRegression(verbose=False)
     Modelo.fit(x_train, y_train)
     pred = Modelo.predict(x_test)
-    Modelo.graficos(pred_path_c)
-    np.savetxt(pred_path_c + "/p02c_logreg.csv", pred, delimiter=",")
+    Modelo.graficos(pred_path_c.replace("/p02c_pred.txt", ""))
+    np.savetxt(pred_path_c, pred, delimiter=",")
     pred[pred >= 0.5] = 1
     pred[pred < 0.5] = 0
-    util.plot(x_test, y_test, Modelo.theta, pred_path_c + "/p02c_logreg.png")
+    util.plot(x_test, y_test, Modelo.theta, pred_path_c.replace("/p02c_pred.txt", "/p02c_logreg.png"))
 
 
     # Part (d): Train en y-labels y test en labels verdaderos.
@@ -47,22 +46,17 @@ def p02cde(train_path, valid_path, test_path, pred_path):
     Modelo = LogisticRegression(verbose=False)
     Modelo.fit(x_train, y_train)
     pred = Modelo.predict(x_test)
-    Modelo.graficos(pred_path_d)
-    np.savetxt(pred_path_d + "/p02d_logreg.csv", pred, delimiter=",")
+    Modelo.graficos(pred_path_d.replace("/p02d_pred.txt", ""))
+    np.savetxt(pred_path_d, pred, delimiter=",")
     pred[pred >= 0.5] = 1
     pred[pred < 0.5] = 0
-    util.plot(x_test, y_test, Modelo.theta, pred_path_d + "/p02d_logreg.png")
+    util.plot(x_test, y_test, Modelo.theta, pred_path_d.replace("/p02d_pred.txt", "/p02d_logreg.png"))
 
     # Part (e): aplicar el factor de correción usando el conjunto de validación, y test en labels verdaderos.
     # Plot y usar np.savetxt para guardar las salidas en  pred_path_e
     # Preguntas:
-        # Que label tengo que usar en train y valid?
-        # Deberia usar y, y luego dividir las predicciones por el factor de correción?
-        # Donde aplico el factor de correción? Dentro del fit o en esta parte?
-        # Usando label verdadero en valid devuelve mejor grafico, porque?
         # Si aplico el factor de correción en el fit, el calculo del costo me da error, porque?
     # Cosas que hice:
-        # Use y en train, y t en valid y test
         # Aplique alpha en el fit justo antes de calcular el accuracy (new_pred / alpha). Accuracy bastante malo
     x_train, y_train = util.load_dataset(train_path, label_col="y", add_intercept=True)
     x_test, y_test = util.load_dataset(test_path, label_col="t", add_intercept=True)
@@ -79,15 +73,11 @@ def p02cde(train_path, valid_path, test_path, pred_path):
     Modelo.fit(x_train, y_train, alpha=alpha) # Fit con el factor de correción
     pred = Modelo.predict(x_test) 
     pred = pred / alpha # Aplico el factor de correción a las predicciones
-    np.savetxt(pred_path_e + "/p02e_logreg.csv", pred, delimiter=",")
-    Modelo.graficos(pred_path_e)
+    np.savetxt(pred_path_e, pred, delimiter=",")
+    Modelo.graficos(pred_path_e.replace("/p02e_pred.txt", ""))
     pred[pred >= 0.5] = 1 # Redondeo las predicciones
     pred[pred < 0.5] = 0
-    util.plot(x_test, y_test, Modelo.theta, pred_path_e + "/p02e_logreg.png", correction=alpha)  
+    util.plot(x_test, y_test, Modelo.theta, pred_path_e.replace("/p02e_pred.txt", "/p02e_logreg.png"), correction=alpha)  
     
 
-
-
-    # *** TERMINAR CÓDIGO AQUÍ
-
-p02cde(train_path='data/ds3_train.csv', valid_path='data/ds3_valid.csv', test_path='data/ds3_test.csv', pred_path='output/p02{}'.format(WILDCARD))
+# p02cde(train_path='data/ds3_train.csv', valid_path='data/ds3_valid.csv', test_path='data/ds3_test.csv', pred_path='output/p02{}'.format(WILDCARD))
