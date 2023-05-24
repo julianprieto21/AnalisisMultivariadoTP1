@@ -48,7 +48,6 @@ class PoissonRegression(LinearModel):
         """
         # *** EMPEZAR EL CÓDIGO AQUÍ ***
         m, n = x.shape
-        g = lambda X: np.exp(X)
 
         if self.theta is None:
             self.theta = np.zeros(n)
