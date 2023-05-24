@@ -3,7 +3,7 @@ import util
 from linear_model import LinearModel
 from sklearn.metrics import accuracy_score
 
-def p01e(train_path, eval_path, pred_path):
+def p01e(train_path, eval_path, pred_path, transform=None):
     """Problema 1(e): análisis de discriminante gaussiano (GDA)
 
     Args:
@@ -13,15 +13,15 @@ def p01e(train_path, eval_path, pred_path):
     """
     # Se cargan los datos de entrenamiento y de testeo
     x_train, y_train = util.load_dataset(train_path, add_intercept=False)
-    x_test, y_test = util.load_dataset(eval_path, add_intercept=False)
+    x_valid, y_valid = util.load_dataset(eval_path, add_intercept=False)
 
     # Se entrena el modelo y se guardan las predicciones
     Modelo=GDA()
-    Modelo.fit(x_train,y_train)
-    pred=Modelo.predict(x_test)
+    Modelo.fit(x_train,y_train, transform=transform)
+    pred=Modelo.predict(x_valid)
     np.savetxt(pred_path + "\p01e_gda.txt", pred,delimiter=',')
-    # util.plot(x_train, y_train, Modelo.theta, pred_path + "/pred_train.png")
-    # util.plot(x_test, y_test, Modelo.theta, pred_path + "/pred_test.png")
+    util.plot(x_train, y_train, Modelo.theta, pred_path + "/pred_train.png")
+    # util.plot(x_valid, y_valid, Modelo.theta, pred_path + "/pred_test.png")
 
 
 class GDA(LinearModel):
@@ -37,9 +37,13 @@ class GDA(LinearModel):
         media = np.mean(x, axis=0) # media de x
         desv = np.std(x, axis=0) # desviacion estandar de x
         x_norm = (x - media) / desv # normaliza x
+        print(x_norm)
         return x_norm
 
-    def fit(self, x, y):
+    def reciprocidad(self, x):
+        return -1/x
+
+    def fit(self, x, y, transform=None):
         """Entrena un modelo GDA.
 
         Args:
@@ -50,28 +54,34 @@ class GDA(LinearModel):
             theta: parámetros del modelo GDA.
         """
 
+        
+        if transform: x = self.reciprocidad(x)
         # x = self.normalizar(x)
-
+        # print(x)
 
         m, n = x.shape # dimensiones de x
 
         ind_y_1 = y.tolist().count(1) # cantidad de registros clasificados con 1
         ind_y_0 = y.tolist().count(0) # cantidad de registros clasificados con 0
+        # print(ind_y_1, ind_y_0)
 
         sum_x_1 = np.sum(x[y==1],axis=0) # suma los registros clasificados con 1
         sum_x_0 = np.sum(x[y==0],axis=0) # suma los registros clasificados con 0
-        
+        # print(sum_x_1, sum_x_0)
+
         # calcula los parámetros del modelo
         phi = ind_y_1/m # probabilidad de que 'y' sea 1
         mu_0 = sum_x_0/ind_y_0 # media de los registros clasificados con 0
         mu_1 = sum_x_1/ind_y_1 # media de los registros clasificados con 1
         sigma = np.diag((1/m)*np.sum((x-mu_1)**2,axis=0)) # varianza de los registros clasificados con 1
+        # print(phi, mu_0, mu_1, sigma)
 
         theta = np.linalg.inv(sigma) @ (mu_1-mu_0)
         theta_0 = np.log(phi/(1-phi)) - (1/2)*np.sum((mu_1**2-mu_0**2) @ np.linalg.inv(sigma),axis=0)
 
         self.theta = np.hstack([theta,theta_0])
         print(self.theta)
+
         return self.theta
 
 

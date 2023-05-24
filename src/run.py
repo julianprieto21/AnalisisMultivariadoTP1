@@ -7,7 +7,7 @@ from p03d_poisson import p03d
 # from p05c_tau import p05c
 
 
-correr = 3  # CAMBIAR POR número de problema a correr. 0 corre todos.
+correr = 1  # CAMBIAR POR número de problema a correr. 0 corre todos.
 
 # Problema 1
 if correr == 0 or correr == 1:
@@ -27,6 +27,7 @@ if correr == 0 or correr == 1:
         train_path="./data/ds1_train.csv",
         eval_path="./data/ds1_valid.csv",
         pred_path="output/p01e/ds1",
+        transform=True,
     )
 
     p01e(
