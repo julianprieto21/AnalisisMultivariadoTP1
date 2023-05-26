@@ -61,7 +61,7 @@ def load_dataset(csv_path, label_col='y', add_intercept=False):
     return inputs, labels
 
 
-def plot(x, y, theta, save_path=None, correction=1.0):
+def plot(x, y, theta, save_path=None, correction=1.0, name_mod=""):
     """Grafica dataset de acuerdo a parámetros entrenados por una regresión logística.
     Args:
         x: matriz de ejemplos train, uno por fila.
@@ -69,11 +69,13 @@ def plot(x, y, theta, save_path=None, correction=1.0):
         theta: vector de parámetros del modelo de regresión logística
         save_path: directorio para guardar el plot.
         correction: factor de correción (Problema 2(e) solamente).
+        name_mod: modificacion del nombre del archivo a guardar.
     """
     # Plot dataset
     plt.figure()
     plt.plot(x[y == 1, -2], x[y == 1, -1], 'bx', linewidth=2)
     plt.plot(x[y == 0, -2], x[y == 0, -1], 'go', linewidth=2)
+    plt.legend(['Clase 1', 'Clase 0'], loc='upper left')
 
     # Plot límite de decisión (encontrato por resolver para theta^t x = 0)
     margin1 = (max(x[:, -2]) - min(x[:, -2]))*0.2
@@ -88,4 +90,4 @@ def plot(x, y, theta, save_path=None, correction=1.0):
     plt.xlabel('x1')
     plt.ylabel('x2')
     if save_path is not None:
-        plt.savefig(save_path)
+        plt.savefig(save_path + name_mod + ".png")

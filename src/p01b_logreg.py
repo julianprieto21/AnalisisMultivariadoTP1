@@ -23,8 +23,11 @@ def p01b(train_path, eval_path, pred_path=""):
     Modelo.graficos(pred_path)
     pred = Modelo.predict(x_test)
     np.savetxt(pred_path + "/pred_logreg.txt", pred, delimiter=",")
-    util.plot(x_train, y_train, Modelo.theta, pred_path + "/pred_train.png")
-    util.plot(x_test, y_test, Modelo.theta, pred_path + "/pred_test.png")
+
+    if pred_path[-1] == "1":
+        util.plot(x_train, y_train, Modelo.theta, "output/p01f/plot_logreg")
+    elif pred_path[-1] == "2":
+        util.plot(x_train, y_train, Modelo.theta, "output/p01g/plot_logreg")
 
 
 class LogisticRegression(LinearModel):
