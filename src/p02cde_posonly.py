@@ -29,28 +29,32 @@ def p02cde(train_path, valid_path, test_path, pred_path):
     # Asegurarse de guardar las salidas en pred_path_c
     x_train, y_train = util.load_dataset(train_path, label_col="t", add_intercept=True)
     x_test, y_test = util.load_dataset(test_path, label_col="t", add_intercept=True)
-    Modelo = LogisticRegression(verbose=False)
+
+    Modelo = LogisticRegression(verbose=True)
     Modelo.fit(x_train, y_train)
     pred = Modelo.predict(x_test)
-    Modelo.graficos(pred_path_c.replace("/p02c_pred.txt", ""))
-    np.savetxt(pred_path_c, pred, delimiter=",")
-    pred[pred >= 0.5] = 1
-    pred[pred < 0.5] = 0
-    util.plot(x_test, y_test, Modelo.theta, pred_path_c.replace("/p02c_pred.txt", "/p02c_logreg.png"))
+    np.savetxt(pred_path_c + "/p02c_pred.txt", pred, delimiter=",")
+
+    Modelo.graficos(pred_path_c)
+    # pred[pred >= 0.5] = 1 # Redondeo las predicciones
+    # pred[pred < 0.5] = 0
+    util.plot(x_test, y_test, Modelo.theta, pred_path_c + "/p02c__logreg")  
 
 
     # Part (d): Train en y-labels y test en labels verdaderos.
     # Asegurarse de guardar las salidas en pred_path_d
     x_train, y_train = util.load_dataset(train_path, label_col="y", add_intercept=True)
     x_test, y_test = util.load_dataset(test_path, label_col="t", add_intercept=True)
-    Modelo = LogisticRegression(verbose=False)
+
+    Modelo = LogisticRegression(verbose=True)
     Modelo.fit(x_train, y_train)
     pred = Modelo.predict(x_test)
-    Modelo.graficos(pred_path_d.replace("/p02d_pred.txt", ""))
-    np.savetxt(pred_path_d, pred, delimiter=",")
-    pred[pred >= 0.5] = 1
+    np.savetxt(pred_path_d + "/p02d_pred.txt", pred, delimiter=",")
+
+    Modelo.graficos(pred_path_d)
+    pred[pred >= 0.5] = 1 # Redondeo las predicciones
     pred[pred < 0.5] = 0
-    util.plot(x_test, y_test, Modelo.theta, pred_path_d.replace("/p02d_pred.txt", "/p02d_logreg.png"))
+    util.plot(x_test, y_test, Modelo.theta, pred_path_d + "/p02d_logreg")  
 
     # Part (e): aplicar el factor de correción usando el conjunto de validación, y test en labels verdaderos.
     # Plot y usar np.savetxt para guardar las salidas en  pred_path_e
@@ -58,26 +62,36 @@ def p02cde(train_path, valid_path, test_path, pred_path):
         # Si aplico el factor de correción en el fit, el calculo del costo me da error, porque?
     # Cosas que hice:
         # Aplique alpha en el fit justo antes de calcular el accuracy (new_pred / alpha). Accuracy bastante malo
+    
     x_train, y_train = util.load_dataset(train_path, label_col="y", add_intercept=True)
     x_test, y_test = util.load_dataset(test_path, label_col="t", add_intercept=True)
     x_valid, y_valid = util.load_dataset(valid_path, label_col="y", add_intercept=True)
-    Modelo = LogisticRegression(verbose=False)
+
+    Modelo = LogisticRegression(verbose=True)
     Modelo.fit(x_train, y_train)
     valid_pred = Modelo.predict(x_valid) # Predicciones en valid
 
     valid_positivo = np.sum(y_valid[y_valid==1]) # Cantidad de positivos en valid
+
     pred_sum = np.sum(valid_pred[y_valid==1]) # Suma de las predicciones positivas en valid
-    alpha = (1/valid_positivo) * pred_sum # Factor de correción
+
+    alpha = pred_sum / valid_positivo # Factor de correción. Formula en el enunciado
     
     Modelo = LogisticRegression(verbose=False)
     Modelo.fit(x_train, y_train, alpha=alpha) # Fit con el factor de correción
     pred = Modelo.predict(x_test) 
     pred = pred / alpha # Aplico el factor de correción a las predicciones
-    np.savetxt(pred_path_e, pred, delimiter=",")
-    Modelo.graficos(pred_path_e.replace("/p02e_pred.txt", ""))
-    pred[pred >= 0.5] = 1 # Redondeo las predicciones
-    pred[pred < 0.5] = 0
-    util.plot(x_test, y_test, Modelo.theta, pred_path_e.replace("/p02e_pred.txt", "/p02e_logreg.png"), correction=alpha)  
+    np.savetxt(pred_path_e + "/p02e_pred.txt", pred, delimiter=",")
+    
+    Modelo.graficos(pred_path_e)
+    # pred[pred >= 0.5] = 1 # Redondeo las predicciones
+    # pred[pred < 0.5] = 0
+    util.plot(x_test, y_test, Modelo.theta, pred_path_e + "/p02e_logreg", correction=alpha)  
     
 
-# p02cde(train_path='data/ds3_train.csv', valid_path='data/ds3_valid.csv', test_path='data/ds3_test.csv', pred_path='output/p02{}'.format(WILDCARD))
+# p02cde(
+#         train_path="./data/ds3_train.csv",
+#         valid_path="./data/ds3_valid.csv",
+#         test_path="./data/ds3_test.csv",
+#         pred_path=f"output/p02WILDCARD",
+#     )

@@ -2,7 +2,7 @@ class LinearModel(object):
     """Clase base para modelos lineales."""
 
     def __init__(
-        self, step_size=0.2, max_iter=100, eps=1e-5, theta_0=None, verbose=True
+        self, step_size=0.2, max_iter=100, eps=1e-5, theta_0=None, verbose=True, method="newton"
     ):
         """
         Args:
@@ -17,6 +17,7 @@ class LinearModel(object):
         self.max_iter = max_iter
         self.eps = eps
         self.verbose = verbose
+        self.method = method
         self.costo = []
         self.coeficientes = []
         self.contador_iteraciones = 0

@@ -1,5 +1,6 @@
 import numpy as np
 import util
+import time
 from linear_model import LinearModel
 import matplotlib.pyplot as plt
 from sklearn.metrics import accuracy_score
@@ -51,6 +52,7 @@ class LogisticRegression(LinearModel):
 
         if self.theta is None: # si theta es None, inicializa theta en vector de ceros
             self.theta = np.zeros(n)
+            # self.theta = np.random.random(n) da error al calcular la inversa de la matriz hessiana
 
         sigmoide = lambda theta: 1 / (1 + np.exp(-theta @ x.T)) # funcion sigmoide
 
@@ -62,32 +64,60 @@ class LogisticRegression(LinearModel):
 
         error = 1 # inicializa el error en 1
 
-        # comienza con las iteraciones con el metodo de Newton
-        while error > self.eps and self.contador_iteraciones < self.max_iter: # iterar hasta que el error sea menor a epsilon o se llegue al maximo de iteraciones
-            pred = sigmoide(self.theta) # calculo de la sigmoide
-            grad = gradiente(sigm_vals=pred) # calculo del gradiente
-            hess = hessiano(sigm_vals=pred) # calculo del hessiano
-            hess_inv = np.linalg.inv(hess) # inversa del hessiano
-            new_theta = self.theta - hess_inv @ grad # calculo de theta nuevo
-            error = np.linalg.norm(new_theta - self.theta) # calculo del error
-            self.theta = new_theta # actualizacion de theta
-            self.contador_iteraciones += 1 # actualizacion de contador de iteraciones
+        inicio = time.time() # guarda el tiempo de inicio
+        if self.method == "newton":
+            # comienza con las iteraciones con el metodo de Newton
+            while error > self.eps and self.contador_iteraciones < self.max_iter: # iterar hasta que el error sea menor a epsilon o se llegue al maximo de iteraciones
+                pred = sigmoide(self.theta) # calculo de la sigmoide
+                grad = gradiente(sigm_vals=pred) # calculo del gradiente
+                hess = hessiano(sigm_vals=pred) # calculo del hessiano
+                hess_inv = np.linalg.inv(hess) # inversa del hessiano
+                new_theta = self.theta - hess_inv @ grad # calculo de theta nuevo
+                error = np.linalg.norm(new_theta - self.theta) # calculo del error
+                self.theta = new_theta # actualizacion de theta
+                self.contador_iteraciones += 1 # actualizacion de contador de iteraciones
 
-            new_pred = sigmoide(self.theta) # calculo de la sigmoide
-            # guarda los valores de theta y el costo
-            self.coeficientes.append(self.theta) # guarda los valores de theta
-            self.costo.append(costo(sigm_vals=new_pred)) # guarda el costo
+                new_pred = sigmoide(self.theta) # calculo de la sigmoide
+                # guarda los valores de theta y el costo
+                self.coeficientes.append(self.theta) # guarda los valores de theta
+                self.costo.append(costo(sigm_vals=new_pred)) # guarda el costo
 
-            # calcula el accuracy en cada iteracion. Corte 0.5
-            new_pred = new_pred / alpha # aplica el factor de correccion
-            new_pred[new_pred >= 0.5] = 1
-            new_pred[new_pred < 0.5] = 0
-            self.accuracy.append(accuracy_score(y, new_pred)) # guarda el accuracy
+                # calcula el accuracy en cada iteracion. Corte 0.5
+                new_pred = new_pred / alpha # aplica el factor de correccion
+                new_pred[new_pred >= 0.5] = 1
+                new_pred[new_pred < 0.5] = 0
+                self.accuracy.append(accuracy_score(y, new_pred)) # guarda el accuracy
+        elif self.method == "gradiente":
+            for _ in range(self.max_iter):
+                pred = sigmoide(self.theta) # calculo de la sigmoide
+                grad = gradiente(sigm_vals=pred) # calculo del gradiente
+                new_theta = self.theta - self.step_size * grad # calculo de theta nuevo
+                error = np.linalg.norm(new_theta - self.theta) # calculo del error
+                self.theta = new_theta # actualizacion de theta
+                self.contador_iteraciones += 1 # actualizacion de contador de iteraciones
+
+                new_pred = sigmoide(self.theta) # calculo de la sigmoide
+                # guarda los valores de theta y el costo
+                self.coeficientes.append(self.theta) # guarda los valores de theta
+                self.costo.append(costo(sigm_vals=new_pred)) # guarda el costo
+
+                # calcula el accuracy en cada iteracion. Corte 0.5
+                new_pred = new_pred / alpha # aplica el factor de correccion
+                new_pred[new_pred >= 0.5] = 1
+                new_pred[new_pred < 0.5] = 0
+                self.accuracy.append(accuracy_score(y, new_pred)) # guarda el accuracy
+
+                if error < self.eps:
+                    break
+        
+        final = time.time() # guarda el tiempo final
+        delta = final - inicio # calcula el tiempo transcurrido
 
         if self.verbose: # si verbose es True, imprime los resultados
             print("Terminó en", self.contador_iteraciones, "iteraciones")
             print("Error:", error)
             print("Theta:", self.theta)
+            print("Tiempo transcurrido:", delta)
 
 
     def predict(self, x):
@@ -143,3 +173,8 @@ class LogisticRegression(LinearModel):
         plt.legend(["Feature 1", "Feature 2"])
         plt.savefig(pred_path + "/evolucion_features.png")
 
+# p01b(
+#         train_path="./data/ds1_train.csv",
+#         eval_path="./data/ds1_valid.csv",
+#         pred_path="output/p01b/ds1",
+#     )

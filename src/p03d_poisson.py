@@ -21,10 +21,11 @@ def p03d(lr, train_path, eval_path, pred_path):
 
     # Entrenar una regresión poisson
     # Correr en el conjunto de validación, y usar  np.savetxt para guardar las salidas en pred_path.
-    Modelo = PoissonRegression(step_size=lr)
+    Modelo = PoissonRegression(step_size=lr, verbose=True)
     Modelo.fit(x_train, y_train)
-    # pred = Modelo.predict(x_eval)
-    # np.savetxt(pred_path, pred, delimiter=",")
+    pred = Modelo.predict(x_eval)
+    # print(pred)
+    np.savetxt(pred_path, pred, delimiter=",")
 
 
     # *** TERMINAR CÓDIGO AQUÍ
@@ -52,23 +53,23 @@ class PoissonRegression(LinearModel):
 
         if self.theta is None:
             self.theta = np.zeros(n)
+            # self.theta = np.random.uniform(-1, 1, size=n)
+        # lambdas = x.dot(self.theta)
+        gradiente = lambda theta: 1/m * (y - np.exp(x.dot(theta))) @ x
 
-        gradiente = lambda theta: np.sum(y)/(theta @ x.T) - m
+        for _ in range(self.max_iter*20):
+            grad = gradiente(self.theta) # gradiente de la verosimilitud
+            new_theta = self.theta + self.step_size * grad # actualización de theta
+            error = np.linalg.norm(self.theta - new_theta) # error
+            self.theta = new_theta # actualización de theta
 
-        for i in range(self.max_iter):
-            theta = self.theta
-
-            grad = gradiente(theta)
-            print(grad)
-            self.theta = theta - self.step_size @ grad
-        
-            error = np.linalg.norm(self.theta - theta)
-            if error < self.eps:
+            if error < self.eps: # condición de parada
                 break
         
-        print("Iteraciones: ", i)
-        print("Error: ", error)
-        print("Theta: ", self.theta)
+        if self.verbose:
+            print("Iteraciones: ", _)
+            print("Error: ", error)
+            print("Theta: ", self.theta)       
 
         # *** TERMINAR CÓDIGO AQUÍ
 
@@ -83,4 +84,16 @@ class PoissonRegression(LinearModel):
         """
         # *** EMPEZAR EL CÓDIGO AQUÍ ***
 
+        eta = self.theta @ x.T # Producto punto entre theta y x
+        pred_lambda = np.exp(eta) # Estimaciones de la media (lambdas) de la distribución de Poisson
+
+        return pred_lambda
+
         # *** TERMINAR CÓDIGO AQUÍ
+
+# p03d(
+#     lr=1e-7,
+#     train_path="./data/ds4_train.csv",
+#     eval_path="./data/ds4_valid.csv",
+#     pred_path="output/p03d/p03d_pred.txt",
+#     )
