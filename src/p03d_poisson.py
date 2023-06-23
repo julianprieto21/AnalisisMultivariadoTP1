@@ -54,8 +54,11 @@ class PoissonRegression(LinearModel):
         if self.theta is None:
             self.theta = np.zeros(n)
             # self.theta = np.random.uniform(-1, 1, size=n)
-        # lambdas = x.dot(self.theta)
-        gradiente = lambda theta: 1/m * (y - np.exp(x.dot(theta))) @ x
+
+        #gradiente = lambda theta: 1/m * (y - np.exp(x.dot(theta))) @ x
+
+        def gradiente(theta):
+            return 1/m * (y - np.exp(x.dot(theta))) @ x
 
         for _ in range(self.max_iter*20):
             grad = gradiente(self.theta) # gradiente de la verosimilitud
@@ -91,9 +94,9 @@ class PoissonRegression(LinearModel):
 
         # *** TERMINAR CÓDIGO AQUÍ
 
-# p03d(
-#     lr=1e-7,
-#     train_path="./data/ds4_train.csv",
-#     eval_path="./data/ds4_valid.csv",
-#     pred_path="output/p03d/p03d_pred.txt",
-#     )
+p03d(
+    lr=1e-7,
+    train_path="./data/ds4_train.csv",
+    eval_path="./data/ds4_valid.csv",
+    pred_path="output/p03d/p03d_pred.txt",
+    )

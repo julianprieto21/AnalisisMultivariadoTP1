@@ -76,11 +76,13 @@ def p02cde(train_path, valid_path, test_path, pred_path):
     pred_sum = np.sum(valid_pred[y_valid==1]) # Suma de las predicciones positivas en valid
 
     alpha = pred_sum / valid_positivo # Factor de correción. Formula en el enunciado
+
     
     Modelo = LogisticRegression(verbose=False)
     Modelo.fit(x_train, y_train, alpha=alpha) # Fit con el factor de correción
     pred = Modelo.predict(x_test) 
     pred = pred / alpha # Aplico el factor de correción a las predicciones
+
     np.savetxt(pred_path_e + "/p02e_pred.txt", pred, delimiter=",")
     
     Modelo.graficos(pred_path_e)
@@ -89,9 +91,9 @@ def p02cde(train_path, valid_path, test_path, pred_path):
     util.plot(x_test, y_test, Modelo.theta, pred_path_e + "/p02e_logreg", correction=alpha)  
     
 
-# p02cde(
-#         train_path="./data/ds3_train.csv",
-#         valid_path="./data/ds3_valid.csv",
-#         test_path="./data/ds3_test.csv",
-#         pred_path=f"output/p02WILDCARD",
-#     )
+p02cde(
+        train_path="./data/ds3_train.csv",
+        valid_path="./data/ds3_valid.csv",
+        test_path="./data/ds3_test.csv",
+        pred_path=f"output/p02WILDCARD",
+    )

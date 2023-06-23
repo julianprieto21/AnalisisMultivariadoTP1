@@ -69,6 +69,9 @@ class GDA(LinearModel):
 
         if transform: x = self.reciprocidad(x) # transforma x si transform es True
 
+
+        x = np.sqrt(np.abs(x))
+
         m, n = x.shape # dimensiones de x
 
         cant_y_1 = y.tolist().count(1) # cantidad de registros clasificados con 1

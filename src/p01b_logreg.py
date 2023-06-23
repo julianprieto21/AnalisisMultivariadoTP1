@@ -87,6 +87,7 @@ class LogisticRegression(LinearModel):
                 new_pred[new_pred >= 0.5] = 1
                 new_pred[new_pred < 0.5] = 0
                 self.accuracy.append(accuracy_score(y, new_pred)) # guarda el accuracy
+                
         elif self.method == "gradiente":
             for _ in range(self.max_iter):
                 pred = sigmoide(self.theta) # calculo de la sigmoide

@@ -41,7 +41,6 @@ def p05a(lr, eps, max_iter, train_path, eval_path, pred_path, seed=42):
 
     # Seleccionar 1000 imágenes con label 0
     df_0 = X[y == 0] # seleccionar filas con label 0
-    # print(df_0.shape)
     df_0 = df_0.sample(n=5000, random_state=seed) # seleccionar 1000 filas (clasificadas con 0) aleatorias
 
     # Seleccionar 1000 imágenes con label 1
@@ -61,7 +60,9 @@ def p05a(lr, eps, max_iter, train_path, eval_path, pred_path, seed=42):
     # show_example(X, y) # mostrar ejemplo
 
     # Separación en train y test
-    x_train, x_test, y_train, y_test = train_test_split(X, y, test_size=0.20, random_state=42,stratify=y)
+    x_train, x_test, y_train, y_test = train_test_split(X, y, test_size=0.20, random_state=seed, stratify=y)
+
+
 
     model = LogisticRegression(step_size=lr, eps=eps, max_iter=max_iter, method="gradiente", verbose=True)
     model.fit(x_train, y_train)
@@ -99,6 +100,9 @@ def p05b(lr, eps, max_iter, train_path, eval_path, pred_path, seed=42):
                 y_copy[i] = 0
             else:
                 y_copy[i] = 1
+
+        # Agregar equilibrio de dataset
+    
         model = LogisticRegression(step_size=lr, eps=eps, max_iter=max_iter, method="gradiente", verbose=True)
         print("Entrenando modelo para el número " + str(num))
         model.fit(X_train, y_copy)
@@ -125,8 +129,6 @@ def p05b(lr, eps, max_iter, train_path, eval_path, pred_path, seed=42):
     cm_display.plot()
     plt.show()
 
-
-
 # *** TERMINAR CÓDIGO AQUÍ ***
 
 
@@ -150,3 +152,4 @@ p05b(
     eval_path="./data/mnist_test.csv",
     pred_path="output/p05b"
 )
+
