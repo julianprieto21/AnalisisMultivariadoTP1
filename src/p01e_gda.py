@@ -49,12 +49,19 @@ class GDA(LinearModel):
     def normalizar(self, x):
         media = np.mean(x, axis=0) # media de x
         desv = np.std(x, axis=0) # desviacion estandar de x
-        x_norm = (x - media) / desv # normaliza x
-        print(x_norm)
-        return x_norm
+        return (x - media) / desv # normaliza x
 
-    def reciprocidad(self, x):
+    def inversa(self, x):
+        return 1/x
+
+    def inversa_negativa(self, x):
         return -1/x
+    
+    def logaritmo(self, x):
+        return np.log(np.abs(x))
+    
+    def raiz(self, x):
+        return np.sqrt(np.abs(x))
 
     def fit(self, x, y, transform=None):
         """Entrena un modelo GDA.
@@ -68,9 +75,6 @@ class GDA(LinearModel):
         """
 
         if transform: x = self.reciprocidad(x) # transforma x si transform es True
-
-
-        x = np.sqrt(np.abs(x))
 
         m, n = x.shape # dimensiones de x
 

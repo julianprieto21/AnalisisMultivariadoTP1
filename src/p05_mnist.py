@@ -107,6 +107,8 @@ def p05b(lr, eps, max_iter, train_path, eval_path, pred_path, seed=42):
         print("Entrenando modelo para el número " + str(num))
         model.fit(X_train, y_copy)
         models.append(model)
+        # Descomentar para guardar los coeficientes de cada modelo y graficar luego los heatmaps
+        # np.savetxt(pred_path + f"/coeff_{num}.csv", model.theta, delimiter=",")
      
     cols = pd.read_csv(eval_path, nrows=1).columns
     X_test = pd.read_csv(eval_path, usecols=cols[1:])
@@ -133,23 +135,84 @@ def p05b(lr, eps, max_iter, train_path, eval_path, pred_path, seed=42):
 
 
 
+p05a(
+    lr=5e-06, 
+    eps=1e-5, 
+    max_iter=1000, 
+    train_path="./data/mnist_train.csv", 
+    eval_path="./data/mnist_test.csv", 
+    pred_path="output/p05a"
+)
 
-
-# p05a(
-#     lr=5e-06, 
-#     eps=1e-5, 
-#     max_iter=1000, 
-#     train_path="./data/mnist_train.csv", 
-#     eval_path="./data/mnist_test.csv", 
-#     pred_path="output/p05a"
+# p05b(
+#     lr=5e-06,
+#     eps=1e-5,
+#     max_iter=1000,
+#     train_path="./data/mnist_train.csv",
+#     eval_path="./data/mnist_test.csv",
+#     pred_path="output/p05b"
 # )
 
-p05b(
-    lr=5e-06,
-    eps=1e-5,
-    max_iter=1000,
-    train_path="./data/mnist_train.csv",
-    eval_path="./data/mnist_test.csv",
-    pred_path="output/p05b"
-)
+# Hacer mapa de calor 28x28 con los coeficientes de cada modelo
+# Ejecutar esto si se guardo los coeficientes de cada modelo en la funcion p05b
+
+# coef_0 = np.loadtxt("./output/p05b/coeff_0.csv", delimiter=",")
+# coef_1 = np.loadtxt("./output/p05b/coeff_1.csv", delimiter=",")
+# coef_2 = np.loadtxt("./output/p05b/coeff_2.csv", delimiter=",")
+# coef_3 = np.loadtxt("./output/p05b/coeff_3.csv", delimiter=",")
+# coef_4 = np.loadtxt("./output/p05b/coeff_4.csv", delimiter=",")
+# coef_5 = np.loadtxt("./output/p05b/coeff_5.csv", delimiter=",")
+# coef_6 = np.loadtxt("./output/p05b/coeff_6.csv", delimiter=",")
+# coef_7 = np.loadtxt("./output/p05b/coeff_7.csv", delimiter=",")
+# coef_8 = np.loadtxt("./output/p05b/coeff_8.csv", delimiter=",")
+# coef_9 = np.loadtxt("./output/p05b/coeff_9.csv", delimiter=",")
+
+# coef_0 = coef_0.reshape(28, 28)
+# coef_1 = coef_1.reshape(28, 28)
+# coef_2 = coef_2.reshape(28, 28)
+# coef_3 = coef_3.reshape(28, 28)
+# coef_4 = coef_4.reshape(28, 28)
+# coef_5 = coef_5.reshape(28, 28)
+# coef_6 = coef_6.reshape(28, 28)
+# coef_7 = coef_7.reshape(28, 28)
+# coef_8 = coef_8.reshape(28, 28)
+# coef_9 = coef_9.reshape(28, 28)
+
+# fig, axs = plt.subplots(2, 5)
+# axs[0, 0].imshow(coef_0)
+# axs[0, 0].set_title("0")
+# axs[0, 1].imshow(coef_1)
+# axs[0, 1].set_title("1")
+# axs[0, 2].imshow(coef_2)
+# axs[0, 2].set_title("2")
+# axs[0, 3].imshow(coef_3)
+# axs[0, 3].set_title("3")
+# axs[0, 4].imshow(coef_4)
+# axs[0, 4].set_title("4")
+# axs[1, 0].imshow(coef_5)
+# axs[1, 0].set_title("5")
+# axs[1, 1].imshow(coef_6)
+# axs[1, 1].set_title("6")
+# axs[1, 2].imshow(coef_7)
+# axs[1, 2].set_title("7")
+# axs[1, 3].imshow(coef_8)
+# axs[1, 3].set_title("8")
+# axs[1, 4].imshow(coef_9)
+# axs[1, 4].set_title("9")
+
+# for ax in axs.flat:
+#     ax.label_outer()
+#     ax.set_xticks([])
+#     ax.set_yticks([])
+#     ax.set_xticklabels([])
+#     ax.set_yticklabels([])
+
+# fig.set_size_inches(10, 5)
+# fig.colorbar(axs[0, 0].imshow(coef_0), ax=axs, shrink=1, aspect=10, label="Valor del coeficientes")
+
+# plt.show()
+
+
+
+
 
