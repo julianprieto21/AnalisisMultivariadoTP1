@@ -4,9 +4,6 @@ from p02cde_posonly import p02cde
 from p03d_poisson import p03d
 from p05_mnist import p05a, p05b
 
-# from p05b_lwr import p05b
-# from p05c_tau import p05c
-
 
 correr = 2  # CAMBIAR POR número de problema a correr. 0 corre todos.
 

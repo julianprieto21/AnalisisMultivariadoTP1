@@ -55,8 +55,8 @@ def p05a(lr, eps, max_iter, train_path, eval_path, pred_path, seed=42):
     df_1_y = y[y == 1].sample(n=5000, random_state=seed) # seleccionar labels con 1
     y = pd.concat([df_0_y, df_1_y]) # unir labels
 
-    print(X.shape)
-    print(y.shape)
+    # print(X.shape)
+    # print(y.shape)
     # show_example(X, y) # mostrar ejemplo
 
     # Separación en train y test
@@ -66,17 +66,48 @@ def p05a(lr, eps, max_iter, train_path, eval_path, pred_path, seed=42):
 
     model = LogisticRegression(step_size=lr, eps=eps, max_iter=max_iter, method="gradiente", verbose=True)
     model.fit(x_train, y_train)
-    model.graficos(pred_path)
+    # model.graficos(pred_path)
     pred = model.predict(x_test)
     # Guardar predicciones para datos de test (p05_pred1.csv)
     np.savetxt(pred_path + "/pred.csv", pred, delimiter=",")
 
     # Métricas de evaluación
-    pred_copy = pred.copy()
-    pred_copy[pred_copy >= 0.5] = 1
-    pred_copy[pred_copy < 0.5] = 0
-    print(metrics.classification_report(y_test, pred_copy))
+    puntos_cortes = np.arange(0.02, 1, 0.05)
+    acc = []
+    rec = []
+    prec = []
+    f1 = []
+    for _ in puntos_cortes:
+        pred_copy = pred.copy()
+        pred_copy[pred_copy >= _] = 1
+        pred_copy[pred_copy < _] = 0
+        acc.append(metrics.accuracy_score(y_test, pred_copy))
+        rec.append(metrics.recall_score(y_test, pred_copy))
+        prec.append(metrics.precision_score(y_test, pred_copy))
+        f1.append(metrics.f1_score(y_test, pred_copy))
+    
+    avg_acc = sum(acc) / len(acc)
+    avg_recall = sum(rec) / len(rec)
+    avg_prec = sum(prec) / len(prec)
+    avg_f1 = sum(f1) / len(f1)
 
+    # Graficar métricas
+    plt.plot(puntos_cortes, acc, label="Accuracy")
+    plt.plot(puntos_cortes, rec, label="Recall")
+    plt.plot(puntos_cortes, prec, label="Precision")
+    plt.plot(puntos_cortes, f1, label="F1")
+    plt.axhline(y=avg_acc, ls="-.", c="blue", label="Promedio Accuracy", alpha=0.7)
+    plt.axhline(y=avg_recall, ls="-.", c="orange", label="Promedio Recall", alpha=0.7)
+    plt.axhline(y=avg_prec, ls="-.", c="green", label="Promedio Precision", alpha=0.7)
+    plt.axhline(y=avg_f1, ls="-.", c="red", label="Promedio F1", alpha=0.7)
+    plt.legend()
+    plt.show()
+    
+    pred_copy = pred.copy()
+    pred_copy[pred_copy >= 0.65] = 1
+    pred_copy[pred_copy < 0.65] = 0
+    metrics.ConfusionMatrixDisplay(metrics.confusion_matrix(y_test, pred_copy)).plot()
+    plt.show()
 
 # *** TERMINAR CÓDIGO AQUÍ ***
 
@@ -107,6 +138,7 @@ def p05b(lr, eps, max_iter, train_path, eval_path, pred_path, seed=42):
         print("Entrenando modelo para el número " + str(num))
         model.fit(X_train, y_copy)
         models.append(model)
+
         # Descomentar para guardar los coeficientes de cada modelo y graficar luego los heatmaps
         # np.savetxt(pred_path + f"/coeff_{num}.csv", model.theta, delimiter=",")
      
@@ -123,8 +155,6 @@ def p05b(lr, eps, max_iter, train_path, eval_path, pred_path, seed=42):
     np.savetxt(pred_path + "/predtot.txt", pred_final, delimiter=",")
 
     pred_final = np.argmax(pred_final, axis=1)
-    # En caso que así se quiera, se pueden visualizar los resultados en una matriz de confusión.
-    # Descomentar en caso afirmativo. Siendo y las labels y pred_final la predicción final.
 
     confusion_matrix = metrics.confusion_matrix(y_test, pred_final)
     cm_display = metrics.ConfusionMatrixDisplay(confusion_matrix = confusion_matrix)
@@ -135,14 +165,14 @@ def p05b(lr, eps, max_iter, train_path, eval_path, pred_path, seed=42):
 
 
 
-p05a(
-    lr=5e-06, 
-    eps=1e-5, 
-    max_iter=1000, 
-    train_path="./data/mnist_train.csv", 
-    eval_path="./data/mnist_test.csv", 
-    pred_path="output/p05a"
-)
+# p05a(
+#     lr=5e-06, 
+#     eps=1e-5, 
+#     max_iter=1000, 
+#     train_path="./data/mnist_train.csv", 
+#     eval_path="./data/mnist_test.csv", 
+#     pred_path="output/p05a"
+# )
 
 # p05b(
 #     lr=5e-06,
@@ -156,16 +186,16 @@ p05a(
 # Hacer mapa de calor 28x28 con los coeficientes de cada modelo
 # Ejecutar esto si se guardo los coeficientes de cada modelo en la funcion p05b
 
-# coef_0 = np.loadtxt("./output/p05b/coeff_0.csv", delimiter=",")
-# coef_1 = np.loadtxt("./output/p05b/coeff_1.csv", delimiter=",")
-# coef_2 = np.loadtxt("./output/p05b/coeff_2.csv", delimiter=",")
-# coef_3 = np.loadtxt("./output/p05b/coeff_3.csv", delimiter=",")
-# coef_4 = np.loadtxt("./output/p05b/coeff_4.csv", delimiter=",")
-# coef_5 = np.loadtxt("./output/p05b/coeff_5.csv", delimiter=",")
-# coef_6 = np.loadtxt("./output/p05b/coeff_6.csv", delimiter=",")
-# coef_7 = np.loadtxt("./output/p05b/coeff_7.csv", delimiter=",")
-# coef_8 = np.loadtxt("./output/p05b/coeff_8.csv", delimiter=",")
-# coef_9 = np.loadtxt("./output/p05b/coeff_9.csv", delimiter=",")
+# coef_0 = np.loadtxt("./output/p05b/coeficientes/coeff_0.csv", delimiter=",")
+# coef_1 = np.loadtxt("./output/p05b/coeficientes/coeff_1.csv", delimiter=",")
+# coef_2 = np.loadtxt("./output/p05b/coeficientes/coeff_2.csv", delimiter=",")
+# coef_3 = np.loadtxt("./output/p05b/coeficientes/coeff_3.csv", delimiter=",")
+# coef_4 = np.loadtxt("./output/p05b/coeficientes/coeff_4.csv", delimiter=",")
+# coef_5 = np.loadtxt("./output/p05b/coeficientes/coeff_5.csv", delimiter=",")
+# coef_6 = np.loadtxt("./output/p05b/coeficientes/coeff_6.csv", delimiter=",")
+# coef_7 = np.loadtxt("./output/p05b/coeficientes/coeff_7.csv", delimiter=",")
+# coef_8 = np.loadtxt("./output/p05b/coeficientes/coeff_8.csv", delimiter=",")
+# coef_9 = np.loadtxt("./output/p05b/coeficientes/coeff_9.csv", delimiter=",")
 
 # coef_0 = coef_0.reshape(28, 28)
 # coef_1 = coef_1.reshape(28, 28)

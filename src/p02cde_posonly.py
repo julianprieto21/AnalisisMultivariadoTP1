@@ -3,10 +3,6 @@ import util
 
 from p01b_logreg import LogisticRegression
 
-# Caracter a reemplazar con el sub problema correspondiente.`
-WILDCARD = 'c'
-
-
 def p02cde(train_path, valid_path, test_path, pred_path):
     """Problema 2: regresión logística para positivos incompletos.
 
@@ -58,10 +54,6 @@ def p02cde(train_path, valid_path, test_path, pred_path):
 
     # Part (e): aplicar el factor de correción usando el conjunto de validación, y test en labels verdaderos.
     # Plot y usar np.savetxt para guardar las salidas en  pred_path_e
-    # Preguntas:
-        # Si aplico el factor de correción en el fit, el calculo del costo me da error, porque?
-    # Cosas que hice:
-        # Aplique alpha en el fit justo antes de calcular el accuracy (new_pred / alpha). Accuracy bastante malo
     
     x_train, y_train = util.load_dataset(train_path, label_col="y", add_intercept=True)
     x_test, y_test = util.load_dataset(test_path, label_col="t", add_intercept=True)
@@ -91,9 +83,9 @@ def p02cde(train_path, valid_path, test_path, pred_path):
     util.plot(x_test, y_test, Modelo.theta, pred_path_e + "/p02e_logreg", correction=alpha)  
     
 
-p02cde(
-        train_path="./data/ds3_train.csv",
-        valid_path="./data/ds3_valid.csv",
-        test_path="./data/ds3_test.csv",
-        pred_path=f"output/p02WILDCARD",
-    )
+# p02cde(
+#         train_path="./data/ds3_train.csv",
+#         valid_path="./data/ds3_valid.csv",
+#         test_path="./data/ds3_test.csv",
+#         pred_path=f"output/p02WILDCARD",
+#     )
