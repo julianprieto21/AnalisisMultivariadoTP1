@@ -1,3 +1,6 @@
+# Link a datasets en el pdf de las consignas (analisisMultivariado_tp1_2023cuat1.pdf).
+# Dataset utilizado: MNIST (https://drive.google.com/drive/folders/1DAoor-RqKL-zJRNu28jYHoX8QsZZXZxT)
+
 # Librerías
 import pandas as pd
 import numpy as np
